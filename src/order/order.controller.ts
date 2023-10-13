@@ -1,7 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
-import { OrderService } from './order.service';
-import { CurrentUser } from 'src/auth/decorators/user.decoratror';
-import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Body, Controller, Get, HttpCode, Post, UsePipes, ValidationPipe } from '@nestjs/common'
+import { OrderService } from './order.service'
+import { CurrentUser } from 'src/auth/decorators/user.decoratror'
+import { Auth } from 'src/auth/decorators/auth.decorator'
+import { OrderDto } from './order.dto'
+import { PaymentStatusDto } from './payment-status.dto'
 
 @Controller('orders')
 export class OrderController {
@@ -9,7 +11,21 @@ export class OrderController {
 
   @Get()
   @Auth()
-  getAll(@CurrentUser('id') userId: number){
+  getAll(@CurrentUser('id') userId: number) {
     return this.orderService.getAll(userId)
+  }
+  
+  @UsePipes(new ValidationPipe())
+  @HttpCode(200)
+  @Post()
+  @Auth()
+  placeOrder(@Body() dto: OrderDto, @CurrentUser('id') userId: number) {
+    return this.orderService.placeOrder(dto, userId)
+  }
+
+  @HttpCode(200)
+  @Post('status')
+  updateStatus (@Body() dto: PaymentStatusDto){
+    return this.orderService.updateStatus(dto)
   }
 }
