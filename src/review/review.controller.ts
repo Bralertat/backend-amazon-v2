@@ -8,10 +8,10 @@ import {
   UsePipes,
   ValidationPipe
 } from '@nestjs/common'
-import { ReviewService } from './review.service'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { CurrentUser } from 'src/auth/decorators/user.decoratror'
 import { ReviewDto } from './review.dto'
+import { ReviewService } from './review.service'
 
 @Controller('reviews')
 export class ReviewController {
@@ -19,6 +19,7 @@ export class ReviewController {
 
   @UsePipes(new ValidationPipe())
   @Get()
+  @Auth('admin')
   async getAll() {
     return this.reviewService.getAll()
   }
